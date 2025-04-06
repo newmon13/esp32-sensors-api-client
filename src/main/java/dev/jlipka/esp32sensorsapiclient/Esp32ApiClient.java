@@ -1,9 +1,10 @@
 package dev.jlipka.esp32sensorsapiclient;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+import java.util.Map;
 
 @Component
 public class Esp32ApiClient {
@@ -16,13 +17,11 @@ public class Esp32ApiClient {
         this.restClient = RestClient.create();
     }
 
-    public String connectToEsp() {
-        ResponseEntity<String> entity = restClient.get()
-                .uri(ESP32_URL)
+    public Map getWaterLevel() {
+        return restClient.get()
+                .uri(ESP32_URL + "/api/data")
                 .retrieve()
-                .toEntity(String.class);
-        System.out.println(entity.getBody().toString());
-        return entity.getBody().toString();
+                .toEntity(Map.class).getBody();
     }
 
 }

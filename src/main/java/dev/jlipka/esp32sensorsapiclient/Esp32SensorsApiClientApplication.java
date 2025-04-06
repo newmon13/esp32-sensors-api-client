@@ -8,17 +8,9 @@ import org.springframework.context.event.EventListener;
 
 @SpringBootApplication
 public class Esp32SensorsApiClientApplication {
-    @Autowired
-    Esp32ApiClient esp32ApiClient;
 
     public static void main(String[] args) {
         SpringApplication.run(Esp32SensorsApiClientApplication.class, args);
-    }
-
-
-    @EventListener(ApplicationStartedEvent.class)
-    public void onStartup() {
-        esp32ApiClient.connectToEsp();
     }
 
 }
