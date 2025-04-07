@@ -5,14 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
-public class WaterSensorController {
+public class WaterLevelSensorController {
     private final WaterLevelSensorService waterLevelSensorService;
 
-    public WaterSensorController(WaterLevelSensorService waterLevelSensorService) {
+    public WaterLevelSensorController(WaterLevelSensorService waterLevelSensorService) {
         this.waterLevelSensorService = waterLevelSensorService;
     }
 
