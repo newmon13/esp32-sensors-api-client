@@ -1,6 +1,7 @@
 package dev.jlipka.esp32sensorsapiclient;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
@@ -17,11 +18,11 @@ public class Esp32ApiClient {
         this.restClient = RestClient.create();
     }
 
-    public Map getWaterLevel() {
+    public Map<String, Integer> getWaterLevel() {
         return restClient.get()
                 .uri(ESP32_URL + "/api/data")
                 .retrieve()
-                .toEntity(Map.class).getBody();
+                .body(new ParameterizedTypeReference<>() {
+                });
     }
-
 }
