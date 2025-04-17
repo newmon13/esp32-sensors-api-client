@@ -22,8 +22,8 @@ public class WaterTankView extends VerticalLayout {
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
-    @Value("${watersensor.url}")
-    private String WATER_SENSOR_URL;
+    @Value("${sensors.api.url}")
+    private String sensorsApiUrl;
     private Div waterTank;
     private Div water;
     private Span levelLabel;
@@ -87,7 +87,7 @@ public class WaterTankView extends VerticalLayout {
 
     private void updateWaterLevel() {
         WaterSensorDataDto waterSensorDataDto = restClient.get()
-                .uri(WATER_SENSOR_URL + "/water-sensor")
+                .uri(sensorsApiUrl + "/water-sensor")
                 .exchange((request, response) -> {
                     if (response.getStatusCode()
                             .is5xxServerError()) {

@@ -10,7 +10,7 @@ import java.util.Map;
 @Component
 public class Esp32ApiClient {
     @Value("${esp32.url}")
-    private String ESP32_URL;
+    private String espUrl;
 
     private final RestClient restClient;
 
@@ -20,7 +20,7 @@ public class Esp32ApiClient {
 
     public Map<String, Integer> getWaterLevel() {
         return restClient.get()
-                .uri(ESP32_URL + "/api/data")
+                .uri(espUrl + "/api/water-sensor")
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });
