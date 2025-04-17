@@ -1,0 +1,3 @@
+[submodule "sensors-api"]
+	path = sensors-api
+	url = https://github.com/newmon13/sensors-api.git
