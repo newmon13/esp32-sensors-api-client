@@ -1,28 +1,32 @@
 package dev.jlipka.esp32sensorsapiclient;
 
+import dev.jlipka.esp32sensorsapiclient.smokesensor.SmokeSensorDataDto;
+import dev.jlipka.esp32sensorsapiclient.watersensor.WaterSensorDataDto;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.util.Map;
-
 @Component
 public class Esp32ApiClient {
+    private final RestClient restClient;
     @Value("${esp32.url}")
     private String espUrl;
-
-    private final RestClient restClient;
 
     public Esp32ApiClient() {
         this.restClient = RestClient.create();
     }
 
-    public Map<String, Integer> getWaterLevel() {
+    public WaterSensorDataDto getWaterLevel() {
         return restClient.get()
                 .uri(espUrl + "/api/water-sensor")
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
+                .body(WaterSensorDataDto.class);
+    }
+
+    public SmokeSensorDataDto getSmokeLevel() {
+        return restClient.get()
+                .uri(espUrl + "/api/smoke-sensor")
+                .retrieve()
+                .body(SmokeSensorDataDto.class);
     }
 }
