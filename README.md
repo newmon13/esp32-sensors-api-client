@@ -21,14 +21,14 @@ This service provides functionality to process and manage SWIFT/BIC codes data. 
 Core functionality:
 - ✅ Retreving data from sensors
 - ✅ Visual representation of received data
-- [] Mail notification if data from sensor reached critical level
-- [] Asynchronous communication between spring module and sensor APIs
+- [ ] Mail notification if data from sensor reached critical level
+- [ ] Asynchronous communication between spring module and sensor APIs
 
 Nice to have:
-- [] Edge cases validation
-- [] Comprehensive test coverage (unit & integration)
-- [] Containerized deployment
-- [] Scalability (using event queuing system)
+- [ ] Edge cases validation
+- [ ] Comprehensive test coverage (unit & integration)
+- [ ] Containerized deployment
+- [ ] Scalability (using event queuing system)
 
 ## Technologies
 
