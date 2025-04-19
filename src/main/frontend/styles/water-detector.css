@@ -1,4 +1,4 @@
-.water-tank-view {
+.water-detector-view {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -42,7 +42,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 50%; /* Domyślna wysokość */
+    height: 50%;
     background-color: rgba(30, 144, 255, 0.5);
     transition: height 0.5s ease-in-out;
     overflow: hidden;
@@ -71,29 +71,8 @@
     left: 0;
     width: 200%;
     height: 100px;
-    background: url("static/wave.png");
     animation: wave-animation linear infinite;
     background: red;
-}
-
-.wave1 {
-    opacity: 0.8;
-    animation-duration: 10s;
-}
-
-.wave2 {
-    opacity: 0.5;
-    animation-duration: 7s;
-    animation-direction: reverse;
-}
-
-@keyframes wave-animation {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
 }
 
 .controls button {
@@ -102,22 +81,4 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
-}
-
-.controls button:first-child {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.controls button:last-child {
-    background-color: #f44336;
-    color: white;
-}
-
-.controls button:hover {
-    transform: scale(1.05);
-}
-
-.controls button:active {
-    transform: scale(0.95);
 }
