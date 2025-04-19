@@ -1,4 +1,4 @@
-package dev.jlipka.esp32sensorsapiclient.watersensor.dto;
+package dev.jlipka.esp32sensorsapiclient.watersensor;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

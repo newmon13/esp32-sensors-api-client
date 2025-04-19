@@ -1,0 +1,337 @@
+.smoke-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.smoke-indicator {
+    transition: background-color 0.5s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    width: 200px;
+    height: 40px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.smoke-status {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.smoke-animation-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    overflow: hidden;
+    margin-top: 20px;
+    border: 1px solid darkgrey;
+}
+
+.smoke-animation-container.level-none {
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.smoke-animation-container.level-medium {
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+}
+
+.smoke-animation-container.level-low {
+    box-shadow: 0 0 10px rgba(0, 128, 0, 0.5);
+}
+
+.smoke-animation-container.level-high {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+}
+
+ul {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    left: 0;
+    top: 0;
+}
+
+li {
+    position: absolute;
+    list-style: none;
+    background: #333;
+    border-radius: 50%;
+    bottom: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+}
+
+@keyframes animateEvenLow {
+    0% {
+        transform: translate(0%, 0) scale(1) skew(3deg) ;
+        opacity: 0.85;
+        filter: blur(1px);
+    }
+
+    20% {
+        transform: translate(-5%, -15px) scale(1.15) skew(-3deg) ;
+        opacity: 0.7;
+        filter: blur(2px);
+    }
+
+    40% {
+        transform: translate(-30%, -40px) scale(1.3) skew(5deg) ;
+        opacity: 0.5;
+        filter: blur(5px);
+    }
+
+    60% {
+        transform: translate(-60%, -75px) scale(1.5) skew(-5deg) ;
+        opacity: 0.3;
+        filter: blur(10px);
+    }
+
+    80% {
+        transform: translate(-80%, -60px) scale(1.6) skew(30deg) ;
+        opacity: 0.2;
+        filter: blur(14px);
+    }
+
+    100% {
+        transform: translate(-100%, -95px) scale(1.7) skew(-10deg) ;
+        opacity: 0;
+        filter: blur(20px);
+    }
+}
+
+@keyframes animateOddLow {
+    0% {
+        transform: translate(0%, 0) scale(1) skew(10deg) ;
+        opacity: 0.85;
+        filter: blur(1px);
+    }
+
+    20% {
+        transform: translate(5%, -20px) scale(1.15) skew(-15deg) ;
+        opacity: 0.7;
+        filter: blur(5px);
+    }
+
+    40% {
+        transform: translate(25%, -40px) scale(1.3) skew(10deg) ;
+        opacity: 0.5;
+        filter: blur(10px);
+    }
+
+    60% {
+        transform: translate(-45%, -60px) scale(1.5) skew(-25deg) ;
+        opacity: 0.3;
+        filter: blur(15px);
+    }
+
+    80% {
+        transform: translate(100%, -80px) scale(1.6) skew(20deg) ;
+        opacity: 0.2;
+        filter: blur(17px);
+    }
+
+    100% {
+        transform: translate(150%, -100px) scale(1.7) skew(-10deg) ;
+        opacity: 0;
+        filter: blur(20px);
+    }
+}
+
+@keyframes animateEvenMedium {
+    0% {
+        transform: translate(-50%, 0) scale(2) skew(10deg) ;
+        opacity: 0.9;
+        filter: blur(2px);
+    }
+
+    20% {
+        transform: translate(-2%, -30px) scale(2.3) skew(5deg) ;
+        opacity: 0.7;
+        filter: blur(5px);
+    }
+
+    40% {
+        transform: translate(-4%, -60px) scale(2.7) skew(-5deg) ;
+        opacity: 0.5;
+        filter: blur(8px);
+    }
+
+    60% {
+        transform: translate(-6%, -90px) scale(3) skew(10deg) ;
+        opacity: 0.3;
+        filter: blur(10px);
+    }
+
+    80% {
+        transform: translate(-8%, -120px) scale(3.2) skew(-20deg) ;
+        opacity: 0.3;
+        filter: blur(12px);
+    }
+
+    100% {
+        transform: translate(-10%, -150px) scale(3.5) skew(30deg) ;
+        opacity: 0;
+        filter: blur(15px);
+    }
+}
+
+@keyframes animateOddMedium {
+    0% {
+        transform: translate(0%, 0) scale(2) skew(5deg) ;
+        opacity: 0.9;
+        filter: blur(2px);
+    }
+
+    20% {
+        transform: translate(5%, -40px) scale(2.3) skew(-5deg) ;
+        opacity: 0.7;
+        filter: blur(5px);
+    }
+
+    40% {
+        transform: translate(15%, -100px) scale(2.7) skew(10deg) ;
+        opacity: 0.5;
+        filter: blur(8px);
+    }
+
+    60% {
+        transform: translate(-10%, -160px) scale(3) skew(-10deg) ;
+        opacity: 0.3;
+        filter: blur(10px);
+    }
+
+    80% {
+        transform: translate(10%, -210px) scale(3.2) skew(5deg) ;
+        opacity: 0.1;
+        filter: blur(12px);
+    }
+
+    100% {
+        transform: translate(20%, -270px) scale(3.5) skew(15deg) ;
+        opacity: 0;
+        filter: blur(15px);
+    }
+}
+
+@keyframes animateEvenHigh {
+    0% {
+        transform: translate(-75%, 0) scale(3) skew(8deg) ;
+        opacity: 0.95;
+        filter: blur(3px);
+    }
+
+    20% {
+        transform: translate(-3%, -60px) scale(3.4) skew(-8deg) ;
+        opacity: 0.8;
+        filter: blur(8px);
+    }
+
+    40% {
+        transform: translate(-6%, -120px) scale(3.9) skew(30deg) ;
+        opacity: 0.6;
+        filter: blur(12px);
+    }
+
+    60% {
+        transform: translate(-9%, -180px) scale(4.4) skew(-15deg) ;
+        opacity: 0.4;
+        filter: blur(16px);
+    }
+
+    80% {
+        transform: translate(-12%, -240px) scale(4.8) skew(20deg) ;
+        opacity: 0.2;
+        filter: blur(20px);
+    }
+
+    100% {
+        transform: translate(-15%, -300px) scale(5.2) skew(-10deg) ;
+        opacity: 0;
+        filter: blur(25px);
+    }
+}
+
+@keyframes animateOddHigh {
+    0% {
+        transform: translate(0%, 0) scale(3) skew(8deg) ;
+        opacity: 0.95;
+        filter: blur(3px);
+    }
+
+    20% {
+        transform: translate(8%, -80px) scale(3.4) skew(-8deg) ;
+        opacity: 0.8;
+        filter: blur(8px);
+    }
+
+    40% {
+        transform: translate(25%, -200px) scale(3.9) skew(15deg) ;
+        opacity: 0.6;
+        filter: blur(12px);
+    }
+
+    60% {
+        transform: translate(-15%, -320px) scale(4.4) skew(-15deg) ;
+        opacity: 0.4;
+        filter: blur(16px);
+    }
+
+    80% {
+        transform: translate(15%, -420px) scale(4.8) skew(8deg) ;
+        opacity: 0.2;
+        filter: blur(20px);
+    }
+
+    100% {
+        transform: translate(30%, -540px) scale(5.2) skew(20deg) ;
+        opacity: 0;
+        filter: blur(25px);
+    }
+}
+
+li:nth-child(1) {
+    animation-delay: 0.1s;
+}
+li:nth-child(2) {
+    animation-delay: 0.3s;
+}
+li:nth-child(3) {
+    animation-delay: 0.5s;
+}
+li:nth-child(4) {
+    animation-delay: 0.8s;
+}
+li:nth-child(5) {
+    animation-delay: 1.2s;
+}
+li:nth-child(6) {
+    animation-delay: 1.6s;
+}
+li:nth-child(7) {
+    animation-delay: 2s;
+}
+li:nth-child(8) {
+    animation-delay: 2.5s;
+}
+
+.smoke-controls button {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.smoke-controls button:hover {
+    transform: translateY(-20px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}

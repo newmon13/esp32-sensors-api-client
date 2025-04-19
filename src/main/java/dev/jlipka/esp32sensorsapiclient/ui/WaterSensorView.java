@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -11,14 +12,14 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-import dev.jlipka.esp32sensorsapiclient.watersensor.dto.WaterSensorDataDto;
+import dev.jlipka.esp32sensorsapiclient.watersensor.WaterSensorDataDto;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestClient;
 
-@Route("/")
-@StyleSheet("css/style.css")
-public class WaterTankView extends VerticalLayout {
+@Route("/water-detector")
+@CssImport("./styles/water-detector.css")
+public class WaterSensorView extends VerticalLayout {
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
@@ -28,11 +29,11 @@ public class WaterTankView extends VerticalLayout {
     private Div water;
     private Span levelLabel;
 
-    public WaterTankView(ObjectMapper objectMapper) {
+    public WaterSensorView(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.restClient = RestClient.create();
 
-        addClassName("water-tank-view");
+        addClassName("water-detector-view");
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
@@ -58,16 +59,9 @@ public class WaterTankView extends VerticalLayout {
         water = new Div();
         water.addClassName("water");
 
-        Div wave1 = new Div();
-        wave1.addClassNames("wave", "wave1");
-
-        Div wave2 = new Div();
-        wave2.addClassNames("wave", "wave2");
-
         levelLabel = new Span("0%");
         levelLabel.addClassName("level-label");
 
-        water.add(wave1, wave2);
         waterTank.add(water, levelLabel);
 
         return waterTank;
