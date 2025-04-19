@@ -19,8 +19,8 @@ This service provides functionality to process and manage SWIFT/BIC codes data. 
 ## Features
 
 Core functionality:
-- ✅ Retreving data from sensors
-- ✅ Visual representation of received data
+- [x] Retreving data from sensors
+- [x] Visual representation of received data
 - [ ] Mail notification if data from sensor reached critical level
 - [ ] Asynchronous communication between spring module and sensor APIs
 
