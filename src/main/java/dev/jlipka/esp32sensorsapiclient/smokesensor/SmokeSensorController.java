@@ -13,7 +13,7 @@ public class SmokeSensorController {
     }
 
     @GetMapping("/smoke-sensor")
-    public SmokeSensorDataDto getSmokeLevel() {
+    public SmokeSensorReading getSmokeLevel() {
         return smokeSensorService.getSmokeLevel()
                 .join();
     }

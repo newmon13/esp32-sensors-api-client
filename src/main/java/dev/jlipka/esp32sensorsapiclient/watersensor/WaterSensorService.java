@@ -6,7 +6,6 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -22,11 +21,11 @@ public class WaterSensorService {
 
     @CircuitBreaker(name = WATER_SENSOR_CB_NAME, fallbackMethod = "getWaterLevelFallback")
     @TimeLimiter(name = WATER_SENSOR_TL_NAME, fallbackMethod = "getWaterLevelFallback")
-    public CompletableFuture<WaterSensorDataDto> getWaterLevel() {
+    public CompletableFuture<WaterSensorReading> getWaterLevel() {
         return CompletableFuture.supplyAsync(esp32ApiClient::getWaterLevel);
     }
 
-    private CompletableFuture<WaterSensorDataDto> getWaterLevelFallback(Throwable throwable) {
+    private CompletableFuture<WaterSensorReading> getWaterLevelFallback(Throwable throwable) {
         throw new SensorApiException("Lost connection to water sensor API");
     }
 }

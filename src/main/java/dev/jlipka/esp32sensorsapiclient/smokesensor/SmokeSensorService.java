@@ -21,11 +21,11 @@ public class SmokeSensorService {
 
     @CircuitBreaker(name = SMOKE_SENSOR_CB_NAME, fallbackMethod = "getSmokeLevelFallback")
     @TimeLimiter(name = SMOKE_SENSOR_TL_NAME, fallbackMethod = "getSmokeLevelFallback")
-    public CompletableFuture<SmokeSensorDataDto> getSmokeLevel() {
+    public CompletableFuture<SmokeSensorReading> getSmokeLevel() {
         return CompletableFuture.supplyAsync(esp32ApiClient::getSmokeLevel);
     }
 
-    private CompletableFuture<SmokeSensorDataDto> getSmokeLevelFallback(Throwable throwable) {
+    private CompletableFuture<SmokeSensorReading> getSmokeLevelFallback(Throwable throwable) {
         throw new SensorApiException("Lost connection to smoke sensor API");
     }
 }

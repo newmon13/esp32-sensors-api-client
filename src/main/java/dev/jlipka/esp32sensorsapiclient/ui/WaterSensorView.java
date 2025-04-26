@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-import dev.jlipka.esp32sensorsapiclient.watersensor.WaterSensorDataDto;
+import dev.jlipka.esp32sensorsapiclient.watersensor.WaterSensorReading;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestClient;
@@ -80,19 +79,19 @@ public class WaterSensorView extends VerticalLayout {
     }
 
     private void updateWaterLevel() {
-        WaterSensorDataDto waterSensorDataDto = restClient.get()
+        WaterSensorReading waterSensorReading = restClient.get()
                 .uri(sensorsApiUrl + "/water-sensor")
                 .exchange((request, response) -> {
                     if (response.getStatusCode()
                             .is5xxServerError()) {
                         showNotification("Lost connection to water sensor API", NotificationVariant.LUMO_CONTRAST);
-                        return new WaterSensorDataDto(-1);
+                        return new WaterSensorReading(-1);
                     }
                     return objectMapper.readValue(response.getBody(), new TypeReference<>() {
                     });
                 });
 
-        updateUI(waterSensorDataDto.waterLevel());
+        updateUI(waterSensorReading.waterLevel());
     }
 
     private void showNotification(String message, NotificationVariant variant) {

@@ -13,7 +13,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.Style;
 import com.vaadin.flow.router.Route;
 import dev.jlipka.esp32sensorsapiclient.smokesensor.SmokeLevelSeverity;
-import dev.jlipka.esp32sensorsapiclient.smokesensor.SmokeSensorDataDto;
+import dev.jlipka.esp32sensorsapiclient.smokesensor.SmokeSensorReading;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestClient;
@@ -93,20 +93,20 @@ public class SmokeSensorView extends VerticalLayout {
     }
 
     private void updateSmokeLevel() {
-        SmokeSensorDataDto dto = restClient.get()
+        SmokeSensorReading dto = restClient.get()
                 .uri(sensorsApiUrl + "/smoke-sensor")
                 .exchange((request, response) -> {
                     if (response.getStatusCode()
                             .is5xxServerError()) {
                         showNotification("Lost connection to smoke sensor API", NotificationVariant.LUMO_CONTRAST);
-                        return new SmokeSensorDataDto(-1, false, -1, null);
+                        return new SmokeSensorReading(-1, false, -1, null);
                     }
-                    return objectMapper.readValue(response.getBody(), SmokeSensorDataDto.class);
+                    return objectMapper.readValue(response.getBody(), SmokeSensorReading.class);
                 });
         updateUI(dto);
     }
 
-    private void updateUI(SmokeSensorDataDto dto) {
+    private void updateUI(SmokeSensorReading dto) {
         updateSmokeIndicator(dto.severity());
         adjustSmokeAnimation(dto.severity());
 

@@ -12,7 +12,7 @@ public class WaterSensorController {
     }
 
     @GetMapping("/water-sensor")
-    public WaterSensorDataDto getWaterLevel() {
+    public WaterSensorReading getWaterLevel() {
         return waterSensorService.getWaterLevel()
                 .join();
     }
