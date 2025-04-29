@@ -1,53 +1,46 @@
 package dev.jlipka.esp32sensorsapiclient.ui;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import dev.jlipka.esp32sensorsapiclient.watersensor.WaterSensorDataDto;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.client.RestClient;
+import dev.jlipka.esp32sensorsapiclient.mqtt.device.DeviceService;
+import dev.jlipka.esp32sensorsapiclient.mqtt.device.Observer;
+import dev.jlipka.esp32sensorsapiclient.sensor.SensorReading;
+import dev.jlipka.esp32sensorsapiclient.sensor.SensorType;
 
-@Route("/water-detector")
+@Route(value = "/water-detector")
 @CssImport("./styles/water-detector.css")
-public class WaterSensorView extends VerticalLayout {
+public class WaterSensorView extends VerticalLayout implements HasUrlParameter<String>, Observer {
 
-    private final RestClient restClient;
-    private final ObjectMapper objectMapper;
-    @Value("${sensors.api.url}")
-    private String sensorsApiUrl;
+    private final DeviceService deviceService;
     private Div waterTank;
     private Div water;
     private Span levelLabel;
+    private String deviceId;
+    private UI ui;
 
-    public WaterSensorView(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-        this.restClient = RestClient.create();
+    //TODO this view is not finished
 
+    public WaterSensorView(DeviceService deviceService) {
+        this.deviceService = deviceService;
         addClassName("water-detector-view");
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
-        add(createTitle(), createWaterTank(), createControls());
-    }
-
-    @PostConstruct
-    private void init() {
-        updateWaterLevel();
+        add(createTitle(), createWaterTank());
     }
 
     private Component createTitle() {
         Div title = new Div();
-        title.setText("Water Tank");
+        title.setText("Water Detector");
         title.addClassName("tank-title");
         return title;
     }
@@ -67,40 +60,17 @@ public class WaterSensorView extends VerticalLayout {
         return waterTank;
     }
 
-    private Component createControls() {
-        Div controls = new Div();
-        controls.addClassName("controls");
-
-        Button buttonRefreshWaterLevel = new Button("Refresh", e -> {
-            updateWaterLevel();
-        });
-
-        controls.add(buttonRefreshWaterLevel);
-        return controls;
-    }
-
     private void updateWaterLevel() {
-        WaterSensorDataDto waterSensorDataDto = restClient.get()
-                .uri(sensorsApiUrl + "/water-sensor")
-                .exchange((request, response) -> {
-                    if (response.getStatusCode()
-                            .is5xxServerError()) {
-                        showNotification("Lost connection to water sensor API", NotificationVariant.LUMO_CONTRAST);
-                        return new WaterSensorDataDto(-1);
-                    }
-                    return objectMapper.readValue(response.getBody(), new TypeReference<>() {
-                    });
-                });
+        SensorReading sensorReading = deviceService.getDevices()
+                .get(deviceId)
+                .getDeviceDetails()
+                .getSensors()
+                .get(SensorType.WATER);
 
-        updateUI(waterSensorDataDto.waterLevel());
+        updateUI(sensorReading.normalizedValue());
     }
 
-    private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = Notification.show(message, 5000, Notification.Position.BOTTOM_CENTER);
-        notification.addThemeVariants(variant);
-    }
-
-    private void updateUI(Integer waterLevel) {
+    private void updateUI(float waterLevel) {
         water.getStyle()
                 .set("height", waterLevel + "%");
         levelLabel.setText(waterLevel + "%");
@@ -115,6 +85,43 @@ public class WaterSensorView extends VerticalLayout {
             waterTank.addClassName("level-high");
         } else {
             waterTank.addClassName("level-critical");
+        }
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        this.ui = attachEvent.getUI();
+        deviceService.addObserver(this);
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        deviceService.removeObserver(this);
+    }
+
+    @Override
+    public void setParameter(BeforeEvent beforeEvent, String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    @Override
+    public void update() {
+        WaterSensorUpdateThread smokeSensorUpdateThread = new WaterSensorUpdateThread(this.ui, this);
+        smokeSensorUpdateThread.start();
+    }
+
+    private static class WaterSensorUpdateThread extends Thread {
+        private final UI ui;
+        private final WaterSensorView view;
+
+        public WaterSensorUpdateThread(UI ui, WaterSensorView view) {
+            this.ui = ui;
+            this.view = view;
+        }
+
+        @Override
+        public void run() {
+            ui.access(view::updateWaterLevel);
         }
     }
 }

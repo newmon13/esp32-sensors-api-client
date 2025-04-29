@@ -1,0 +1,9 @@
+version: '1'
+services:
+  mosquitto:
+    container_name: mosquitto
+    build: .
+    restart: always
+    ports:
+      - "1883:1883"
+
