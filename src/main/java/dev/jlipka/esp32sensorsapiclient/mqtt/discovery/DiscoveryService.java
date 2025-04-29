@@ -1,7 +1,7 @@
 package dev.jlipka.esp32sensorsapiclient.mqtt.discovery;
 
+import dev.jlipka.esp32sensorsapiclient.mqtt.MessageMapper;
 import dev.jlipka.esp32sensorsapiclient.mqtt.device.DeviceService;
-import dev.jlipka.esp32sensorsapiclient.mqtt.device.NewDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
@@ -18,13 +18,12 @@ public class DiscoveryService {
     public DiscoveryService(DeviceService deviceService, MessageMapper messageMapper) {
         this.deviceService = deviceService;
         this.messageMapper = messageMapper;
-
     }
 
     public void discover(Message<?> message) {
-        NewDevice newDevice = messageMapper.toNewDevice(message);
-        logger.info("Discovered device: {}", newDevice);
+        DiscoveryMessage discoveryMessage = messageMapper.toDiscoveryMessage(message);
+        logger.info("Discovered device: {}", discoveryMessage);
 
-        deviceService.register(newDevice);
+        deviceService.register(discoveryMessage);
     }
 }
