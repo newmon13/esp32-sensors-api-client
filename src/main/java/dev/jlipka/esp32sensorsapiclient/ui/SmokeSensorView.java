@@ -1,52 +1,45 @@
 package dev.jlipka.esp32sensorsapiclient.ui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.dom.Style;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import dev.jlipka.esp32sensorsapiclient.smokesensor.SmokeLevelSeverity;
-import dev.jlipka.esp32sensorsapiclient.smokesensor.SmokeSensorReading;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.client.RestClient;
+import dev.jlipka.esp32sensorsapiclient.mqtt.device.DeviceService;
+import dev.jlipka.esp32sensorsapiclient.mqtt.device.Observer;
+import dev.jlipka.esp32sensorsapiclient.sensor.SensorReading;
+import dev.jlipka.esp32sensorsapiclient.sensor.SensorType;
+import dev.jlipka.esp32sensorsapiclient.sensor.Severity;
 
 import java.util.List;
 
-@Route("/smoke-detector")
+@Route(value = "/smoke-detector")
 @CssImport("./styles/smoke-detector.css")
-public class SmokeSensorView extends VerticalLayout {
+public class SmokeSensorView extends VerticalLayout implements HasUrlParameter<String>, Observer {
 
-    private final RestClient restClient;
-    private final ObjectMapper objectMapper;
     private final Div smokeIndicator = new Div();
     private final UnorderedList smokeAnimation = new UnorderedList();
-    @Value("${sensors.api.url}")
-    private String sensorsApiUrl;
+    private final DeviceService deviceService;
+    private String deviceId;
+    private UI ui;
 
-    public SmokeSensorView(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-        this.restClient = RestClient.create();
+    public SmokeSensorView(DeviceService deviceService) {
+        this.deviceService = deviceService;
 
         addClassName("smoke-detector-view");
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
-
         add(createTitle(), createSmokeIndicator(), createSmokeAnimation());
-        add(createControls());
-    }
-
-    @PostConstruct
-    private void init() {
-        updateSmokeLevel();
     }
 
     private Component createTitle() {
@@ -80,42 +73,25 @@ public class SmokeSensorView extends VerticalLayout {
         return container;
     }
 
-    private Component createControls() {
-        Div controls = new Div();
-        controls.addClassName("controls");
-
-        Button buttonRefreshWaterLevel = new Button("Refresh", e -> {
-            updateSmokeLevel();
-        });
-
-        controls.add(buttonRefreshWaterLevel);
-        return controls;
+    public void updateSmokeLevel() {
+        SensorReading sensorReading = deviceService.getDevices()
+                .get(deviceId)
+                .getDeviceDetails()
+                .getSensors()
+                .get(SensorType.SMOKE);
+        updateUI(sensorReading);
     }
 
-    private void updateSmokeLevel() {
-        SmokeSensorReading dto = restClient.get()
-                .uri(sensorsApiUrl + "/smoke-sensor")
-                .exchange((request, response) -> {
-                    if (response.getStatusCode()
-                            .is5xxServerError()) {
-                        showNotification("Lost connection to smoke sensor API", NotificationVariant.LUMO_CONTRAST);
-                        return new SmokeSensorReading(-1, false, -1, null);
-                    }
-                    return objectMapper.readValue(response.getBody(), SmokeSensorReading.class);
-                });
-        updateUI(dto);
-    }
-
-    private void updateUI(SmokeSensorReading dto) {
+    public void updateUI(SensorReading dto) {
         updateSmokeIndicator(dto.severity());
         adjustSmokeAnimation(dto.severity());
 
-        if (dto.severity() == SmokeLevelSeverity.HIGH) {
-            showNotification("WARNING! HIGH SMOKE LEVEL!", NotificationVariant.LUMO_ERROR);
+        if (dto.severity() == Severity.HIGH) {
+            Notification.show("WARNING! HIGH SMOKE LEVEL!", 5000, Notification.Position.BOTTOM_CENTER);
         }
     }
 
-    private void updateSmokeIndicator(SmokeLevelSeverity severity) {
+    private void updateSmokeIndicator(Severity severity) {
         Style smokeIndicatorStyle = smokeIndicator.getStyle();
         switch (severity) {
             case NONE -> smokeIndicatorStyle.set("background-color", "white");
@@ -125,7 +101,7 @@ public class SmokeSensorView extends VerticalLayout {
         }
     }
 
-    private void adjustSmokeAnimation(SmokeLevelSeverity level) {
+    private void adjustSmokeAnimation(Severity level) {
         List<Component> list = smokeAnimation.getChildren()
                 .toList();
 
@@ -133,38 +109,62 @@ public class SmokeSensorView extends VerticalLayout {
             Component component = list.get(i);
             if (component instanceof ListItem item) {
                 switch (level) {
-                    case NONE -> {
-                        item.getStyle()
-                                .set("opacity", "0");
-                    }
-                    case LOW -> {
-                        item.getStyle()
-                                .set("width", "15px")
-                                .set("height", "15px")
-                                .set("animation-name", (i % 2 == 0) ? "animateEvenLow" : "animateOddLow")
-                                .set("animation-duration", "4s");
-                    }
-                    case MEDIUM -> {
-                        item.getStyle()
-                                .set("width", "25px")
-                                .set("height", "25px")
-                                .set("animation-name", (i % 2 == 0) ? "animateEvenMedium" : "animateOddMedium")
-                                .set("animation-duration", "3s");
-                    }
-                    case HIGH -> {
-                        item.getStyle()
-                                .set("width", "40px")
-                                .set("height", "40px")
-                                .set("animation-name", (i % 2 == 0) ? "animateEvenHigh" : "animateOddHigh")
-                                .set("animation-duration", "2s");
-                    }
+                    case NONE -> item.getStyle()
+                            .set("opacity", "0");
+                    case LOW -> item.getStyle()
+                            .set("width", "15px")
+                            .set("height", "15px")
+                            .set("animation-name", (i % 2 == 0) ? "animateEvenLow" : "animateOddLow")
+                            .set("animation-duration", "4s");
+                    case MEDIUM -> item.getStyle()
+                            .set("width", "25px")
+                            .set("height", "25px")
+                            .set("animation-name", (i % 2 == 0) ? "animateEvenMedium" : "animateOddMedium")
+                            .set("animation-duration", "3s");
+                    case HIGH -> item.getStyle()
+                            .set("width", "40px")
+                            .set("height", "40px")
+                            .set("animation-name", (i % 2 == 0) ? "animateEvenHigh" : "animateOddHigh")
+                            .set("animation-duration", "2s");
                 }
             }
         }
     }
 
-    private void showNotification(String message, NotificationVariant variant) {
-        Notification notification = Notification.show(message, 5000, Notification.Position.BOTTOM_CENTER);
-        notification.addThemeVariants(variant);
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        this.ui = attachEvent.getUI();
+        deviceService.addObserver(this);
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        deviceService.removeObserver(this);
+    }
+
+    @Override
+    public void setParameter(BeforeEvent beforeEvent, String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    @Override
+    public void update() {
+        SmokeSensorUpdateThread smokeSensorUpdateThread = new SmokeSensorUpdateThread(this.ui, this);
+        smokeSensorUpdateThread.start();
+    }
+
+    private static class SmokeSensorUpdateThread extends Thread {
+        private final UI ui;
+        private final SmokeSensorView view;
+
+        public SmokeSensorUpdateThread(UI ui, SmokeSensorView view) {
+            this.ui = ui;
+            this.view = view;
+        }
+
+        @Override
+        public void run() {
+            ui.access(view::updateSmokeLevel);
+        }
     }
 }
